@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: diploma-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: diploma-app
+  template:
+    metadata:
+      labels:
+        app: diploma-app
+    spec:
+      containers:
+        - name: diploma-app
+          image: sojasac/diploma-app:latest   # твой образ в Docker Hub
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080

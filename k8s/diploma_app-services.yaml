@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: diploma-app
+spec:
+  selector:
+    app: diploma-app
+  type: LoadBalancer
+  ports:
+    - port: 80          # внешний порт
+      targetPort: 8080 # порт внутри контейнера
