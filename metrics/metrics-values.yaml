@@ -1,0 +1,6 @@
+grafana:
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - grafana.local
