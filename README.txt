@@ -52,7 +52,7 @@ helm repo update
 helm install monitoring prometheus-community/kube-prometheus-stack -f metrics-values.yaml
 
 
-6. Проверка состояния^
+6. Проверка состояния:
 
 kubectl get pods --all-namespaces
 kubectl get svc --all-namespaces
