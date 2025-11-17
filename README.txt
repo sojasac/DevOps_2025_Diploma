@@ -51,9 +51,18 @@ helm repo update
 # values-файл с настройкой Ingress для Grafana
 helm install monitoring prometheus-community/kube-prometheus-stack -f metrics-values.yaml
 
+6. LoadBalancer для Grafana:
 
-6. Проверка состояния:
+cd <папка_репозитория>/k8s
+kubectl apply -f grafana_lb-services.yaml
+
+
+7. Проверка состояния:
 
 kubectl get pods --all-namespaces
 kubectl get svc --all-namespaces
 kubectl get ingress
+
+8. Доступ в браузере:
+
+После выполнения команды kubectl get svc --all-namespace в поле EXTERNAL-IP будет url приложения и графаны
