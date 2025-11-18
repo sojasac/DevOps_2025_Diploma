@@ -5,7 +5,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-    - port: 80 # публичный порт
+    - port: 8080 # публичный порт
       targetPort: 3000 # порт внутри Pod’а Grafana
   selector:
     app.kubernetes.io/name: grafana
