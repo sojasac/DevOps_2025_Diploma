@@ -41,7 +41,7 @@ jobs:
 
       - name: Update container image in deployment
         run: |
-          sed -i "s|image: .*$|image: ${{ secrets.DOCKERHUB_USERNAME }}/diploma-app:latest|g" k8s/deployment.yaml
+          sed -i "s|image: .*$|image: ${{ secrets.DOCKERHUB_USERNAME }}/diploma-app:latest|g" k8s/diploma_app-deployment.yaml
 
       - name: Apply Kubernetes manifests
         run: |
