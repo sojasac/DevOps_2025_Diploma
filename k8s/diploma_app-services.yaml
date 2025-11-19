@@ -2,10 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: diploma-app
+  labels:
+    app: diploma-app
 spec:
   selector:
     app: diploma-app
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-    - port: 80          # внешний порт
-      targetPort: 8080 # порт внутри контейнера
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
