@@ -1,70 +1,88 @@
-# My-App + EKS + Monitoring
+# DevOps 2025 — Дипломный проект
+**AWS EKS + один Ingress + Prometheus/Grafana + Argo CD (ставится автоматически на машине)**
 
-## Требования
+## Полная инструкция запуска с чистого AWS-инстанса (Ubuntu 22.04/24.04)
 
-Перед тем как клонировать репозиторий, убедитесь, что на вашей Linux-машине установлены следующие инструменты:
+### 1. Клонирование репозитория
+  git clone https://github.com/sojasac/DevOps_2025_Diploma.git
+  cd DevOps_2025_Diploma
 
-- [Git](https://git-scm.com/) — для клонирования репозитория
-- [Docker](https://www.docker.com/) — для сборки и работы контейнеров
-- [kubectl](https://kubernetes.io/docs/tasks/tools/) — для работы с Kubernetes
-- [Helm](https://helm.sh/) — для управления Helm-чартами (Prometheus/Grafana)
-- [AWS CLI](https://aws.amazon.com/cli/) — для работы с EKS
-- [Terraform](https://www.terraform.io/) — для развертывания инфраструктуры EKS
+### 2. Установка ВСЕХ инструментов
+  # Обновляем систему
+  sudo apt update && sudo apt upgrade -y
+  
+  # AWS CLI v2
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  unzip awscliv2.zip && sudo ./aws/install && rm -rf aws awscliv2.zip
+  
+  # Terraform
+  wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg >/dev/null
+  echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+  sudo apt update && sudo apt install terraform -y
+  
+  # kubectl
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+  
+  # Helm
+  curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  
+  # yq (yaml-процессор)
+  sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+  sudo chmod +x /usr/local/bin/yq
+  
+  # Argo CD CLI (обязательно ставится!)
+  curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+  sudo chmod +x /usr/local/bin/argocd
+  
+  # Проверка, что всё установилось
+  echo "Версии инструментов:"
+  aws --version | head -1
+  terraform --version
+  kubectl version --client --short
+  helm version --short
+  yq --version
+  argocd version --client --short
 
-> Рекомендуется использовать Linux (Ubuntu/Debian) с bash.
+### 3. Настройка AWS credentials
+  aws configure
+  # Вводим:
+  # AWS Access Key ID
+  # AWS Secret Access Key
+  # Region (например eu-central-1)
+  # Output format: json
 
----
-
-## Быстрый старт
-
-1. Клонируйте репозиторий:
-
-git clone <URL_репозитория>
-cd <имя_папки>
-
-2. Развернуть инфраструктуру через Terraform:
-
-cd <папка_репозитория>/terraform
-terraform init         # инициализация
-terraform plan         # посмотреть, что будет создано
-terraform apply 
-
-3. Настроить kubectl для доступа к кластеру:
-
-aws eks --region <region> update-kubeconfig --name <cluster_name>
-kubectl get nodes     # проверяем доступ
-
-4. Деплой приложения:
-
-cd <папка_репозитория>/k8s
-kubectl apply -f diploma_app-deployment.yaml
-kubectl apply -f diploma_app-services.yaml
-kubectl get pods
-kubectl get svc
-
-5. Деплой мониторинга через Helm:
-
-cd <папка_репозитория>/metrics
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
-
-# values-файл с настройкой Ingress для Grafana
-helm install monitoring prometheus-community/kube-prometheus-stack -f metrics-values.yaml
-
-6. LoadBalancer для Grafana:
-
-cd <папка_репозитория>/k8s
-kubectl apply -f grafana_lb-services.yaml
+### 4. Ручной запуск инфраструктуры (Terraform)
+  cd terraform
+  terraform init
+  terraform plan
+  terraform apply
 
 
-7. Проверка состояния:
+### 5. Подключение к кластеру
+  aws eks update-kubeconfig --region $(terraform output -raw region) --name $(terraform output -raw cluster_name)
+  kubectl get nodes
 
-kubectl get pods --all-namespaces
-kubectl get svc --all-namespaces
-kubectl get ingress
 
-8. Доступ в браузере:
+### 6. Добавь секреты в GitHub (один раз!)
+  https://github.com/sojasac/DevOps_2025_Diploma/settings/secrets/actions → 3 секрета:
+  AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY
+  AWS_REGION
 
-Получение password Grafana: kubectl get secret monitoring-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
-Логин Grafana: admin
-После выполнения команды kubectl get svc --all-namespace в поле EXTERNAL-IP будет url приложения и графаны
+### 7. Запуск приложения + мониторинга + Argo CD — одним пушем
+  cd ..
+  git commit --allow-empty -m "Full deploy: app + monitoring + Argo CD"
+  git push origin main
+
+### 8. Один внешний адрес на всё
+  EXTERNAL=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}{.status.loadBalancer.ingress[0].ip}')
+  echo "Главный адрес: http://$EXTERNAL"
+  Доступ:
+  http://$EXTERNAL           → дипломное приложение
+  http://$EXTERNAL/grafana   → Grafana (admin + пароль в логах Actions)
+  http://$EXTERNAL/argocd    → Argo CD веб-интерфейс (полностью через Ingress!
+
+### 9. Полная очистка
+  cd terraform
+  terraform destroy -auto-approve
