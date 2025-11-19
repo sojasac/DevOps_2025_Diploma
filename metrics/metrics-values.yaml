@@ -1,6 +1,17 @@
 grafana:
   ingress:
-    enabled: true
-    className: nginx
-    hosts:
-      - grafana.local
+    enabled: false                                 
+  env:
+    GF_SERVER_ROOT_URL: "http://REPLACE_WITH_IP/grafana"
+    GF_SERVER_SERVE_FROM_SUB_PATH: "true"         
+
+argo-cd:
+  server:
+    extraArgs:
+      - --insecure
+    config:
+      url: http://REPLACE_WITH_IP/argocd
+    ingress:
+      enabled: false
+    service:
+      type: ClusterIP
