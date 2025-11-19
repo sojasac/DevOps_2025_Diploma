@@ -1,5 +1,5 @@
 # DevOps 2025 — Дипломный проект
-**AWS EKS + один Ingress + Prometheus/Grafana + Argo CD (ставится автоматически на машине)**
+**AWS EKS + один Ingress + Prometheus/Grafana + Argo CD (ставится руками на машине)**
 
 ## Полная инструкция запуска с чистого AWS-инстанса (Ubuntu 22.04/24.04)
 
