@@ -2,7 +2,7 @@ grafana:
   ingress:
     enabled: false                                 
   env:
-    GF_SERVER_ROOT_URL: "http://REPLACE_WITH_IP/grafana"
+    GF_SERVER_ROOT_URL: "http://http://a9401311ee6f8426aba6378dbbd5079f-905952243.us-east-1.elb.amazonaws.com//grafana"
     GF_SERVER_SERVE_FROM_SUB_PATH: "true"         
 
 argo-cd:
@@ -10,7 +10,7 @@ argo-cd:
     extraArgs:
       - --insecure
     config:
-      url: http://REPLACE_WITH_IP/argocd
+      url: http://http://a9401311ee6f8426aba6378dbbd5079f-905952243.us-east-1.elb.amazonaws.com//argocd
     ingress:
       enabled: false
     service:
