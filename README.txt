@@ -25,15 +25,13 @@
   chmod +x kubectl && sudo mv kubectl /usr/local/bin/
   
   # Helm
-  curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-  
-  # yq (yaml-процессор)
-  sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-  sudo chmod +x /usr/local/bin/yq
-  
+  helm install [RELEASE_NAME] oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack
+  helm upgrade monitoring oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack --values metrics/grafana-values.yaml
+    
   # Argo CD CLI (обязательно ставится!)
-  curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-  sudo chmod +x /usr/local/bin/argocd
+  helm repo add argo https://argoproj.github.io/argo-helm
+  helm upgrade --install argocd argo/argo-cd --namespace argocd --create-namespace --set controller.replicas=1 --set reposerver.replicas=1 --set server.replicas=1 --set configs.params.server.insecure=true
+  kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
   
   # Проверка, что всё установилось
   echo "Версии инструментов:"
@@ -76,12 +74,8 @@
   git push origin main
 
 ### 8. Один внешний адрес на всё
-  EXTERNAL=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}{.status.loadBalancer.ingress[0].ip}')
-  echo "Главный адрес: http://$EXTERNAL"
-  Доступ:
-  http://$EXTERNAL           → дипломное приложение
-  http://$EXTERNAL/grafana   → Grafana (admin + пароль в логах Actions)
-  http://$EXTERNAL/argocd    → Argo CD веб-интерфейс (полностью через Ingress!
+  kubectl get svc --all-namespaces
+  EXTERNAL-IP - урла сервиса
 
 ### 9. Полная очистка
   cd terraform
