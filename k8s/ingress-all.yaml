@@ -10,24 +10,27 @@ spec:
   rules:
     - http:
         paths:
+          # Главная
           - path: /?(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: diploma-app
                 port:
                   number: 80
 
+          # Grafana
           - path: /grafana(/|$)(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: monitoring-grafana
                 port:
                   number: 3000
 
+          # Argo CD
           - path: /argocd(/|$)(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: argocd-server
