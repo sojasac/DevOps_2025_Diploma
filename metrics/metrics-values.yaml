@@ -3,7 +3,7 @@ grafana:
     enabled: false
   env:
     GF_SERVER_HTTP_ADDR: "0.0.0.0"
-    GF_SERVER_ROOT_URL: "/grafana/"
+    GF_SERVER_ROOT_URL: "http://a9401311ee6f8426aba6378dbbd5079f-905952243.us-east-1.elb.amazonaws.com/grafana/"
     GF_SERVER_SERVE_FROM_SUB_PATH: "true"
 
 argo-cd:
@@ -13,7 +13,7 @@ argo-cd:
       - --rootpath=/argocd
       - --listen=:80
     config:
-      url: "/argocd/"
+      url: "http://a9401311ee6f8426aba6378dbbd5079f-905952243.us-east-1.elb.amazonaws.com/argocd/"
       server.basehref: /argocd
       server.rootpath: /argocd
       application.instanceLabelKey: argocd.argoproj.io/instance
