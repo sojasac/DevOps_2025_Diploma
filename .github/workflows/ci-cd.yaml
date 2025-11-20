@@ -49,4 +49,4 @@ jobs:
 
       - name: Apply Argocd manifests
         run: |
-          kubectl apply -f argocd/
+          kubectl apply -f argocd/application.yaml
