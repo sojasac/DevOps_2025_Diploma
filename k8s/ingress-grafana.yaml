@@ -7,6 +7,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/configuration-snippet: "proxy_set_header X-Grafana-Root-Url $scheme://$host/grafana/;"
 spec:
   rules:
     - http:
