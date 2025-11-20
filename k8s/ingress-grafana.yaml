@@ -1,7 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: diploma-all-services
+  name: grafana
+  namespaces: monitoring
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
@@ -10,11 +11,10 @@ spec:
   rules:
     - http:
         paths:
-          # Главная
-          - path: /?(.*)
+          - path: /grafana(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
-                name: diploma-app
+                name: monitoring-grafana
                 port:
                   number: 80
