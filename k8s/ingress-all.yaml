@@ -4,14 +4,13 @@ metadata:
   name: diploma-all-services
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
     nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
     - http:
         paths:
-          # 1. Главная страница
-          - path: /
+          - path: /?(.*)
             pathType: Prefix
             backend:
               service:
@@ -19,8 +18,7 @@ spec:
                 port:
                   number: 80
 
-          # 2. Grafana
-          - path: /grafana
+          - path: /grafana(/|$)(.*)
             pathType: Prefix
             backend:
               service:
@@ -28,8 +26,7 @@ spec:
                 port:
                   number: 3000
 
-          # 3. Argo CD
-          - path: /argocd
+          - path: /argocd(/|$)(.*)
             pathType: Prefix
             backend:
               service:
